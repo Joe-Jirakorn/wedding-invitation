@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        roseGold: '#B76E79',
+                        roseGoldLight: '#F7E7E8',
+                        softGold: '#D4AF37',
+                        warmGray: '#F9F8F6'
+                    },
+                    fontFamily: {
+                        heading: ['"Playfair Display"', 'serif'],
+                        cursive: ['"Charm"', 'cursive'],
+                        sans: ['"Prompt"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .editable-active {
+            outline: 2px dashed #B76E79 !important;
+            outline-offset: 4px;
+            background-color: rgba(183, 110, 121, 0.05);
+            border-radius: 4px;
+            cursor: text;
+        }
+    </style>
+</head>
+
+<body class="bg-warmGray text-gray-800 font-sans antialiased pb-12">
+
+    <!-- Admin Floating Control Bar -->
+    <div
+        class="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-white/90 backdrop-blur-md p-2 rounded-2xl shadow-xl border border-roseGold/30">
+        <button id="adminLoginBtn" onclick="toggleAdminLogin()"
+            class="bg-gray-800 text-white text-xs px-3 py-2 rounded-xl font-medium hover:bg-black transition">
+            🔒 เข้าสู่ระบบ Admin
+        </button>
+        <div id="adminControls" class="hidden flex items-center gap-2">
+            <span class="text-xs font-semibold text-roseGold px-2">✨ โหมดแก้ไข (Admin)</span>
+            <button onclick="saveAllToFirebase()"
+                class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-xl font-medium hover:bg-emerald-700 transition shadow-sm">
+                💾 บันทึกขึ้น Firebase
+            </button>
+            <button onclick="logoutAdmin()"
+                class="bg-red-500 text-white text-xs px-3 py-2 rounded-xl font-medium hover:bg-red-600 transition">
+                🚪 ออกจากระบบ
+            </button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-40 shadow-sm border-b border-gray-100">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" id="editable-logo" class="font-cursive text-2xl text-roseGold font-bold">A & S</a>
+            <div class="hidden md:flex space-x-6 text-sm font-medium text-gray-600">
+                <a href="#story" class="hover:text-roseGold transition">เรื่องราว</a>
+                <a href="#schedule" class="hover:text-roseGold transition">กำหนดการ</a>
+                <a href="#gallery" class="hover:text-roseGold transition">อัลบั้มภาพ</a>
+                <a href="#rsvp" class="hover:text-roseGold transition">ตอบรับเข้าร่วมงาน</a>
+                <a href="#wishes" class="hover:text-roseGold transition">คำอวยพร</a>
+            </div>
+            <a href="#rsvp"
+                class="bg-roseGold text-white px-4 py-2 rounded-full text-xs md:text-sm font-medium hover:bg-roseGold/90 transition shadow-sm">
+                RSVP ตอบรับงาน
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+        class="min-h-screen flex items-center justify-center text-center text-white relative px-4 pt-16 bg-cover bg-center transition-all duration-300"
+        id="hero-section"
+        style="background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80');">
+
+        <!-- Change Cover Image (Admin Only) -->
+        <div class="admin-only hidden absolute top-20 right-4 z-10">
+            <label
+                class="bg-white/90 text-gray-800 text-xs px-3 py-2 rounded-xl cursor-pointer shadow-md hover:bg-white font-medium">
+                📷 เปลี่ยนรูปปก Hero
+                <input type="file" accept="image/*" class="hidden" onchange="uploadImage(event, 'hero-bg')">
+            </label>
+        </div>
+
+        <div class="max-w-2xl mx-auto py-12">
+            <p id="editable-subtitle" class="text-lg md:text-xl font-light tracking-widest uppercase mb-2">
+                เรากำลังจะแต่งงานกัน</p>
+            <h2 id="editable-couple-name" class="font-cursive text-5xl md:text-7xl font-bold my-4 text-roseGoldLight">
+                แอ๊นท์ & เอสโซ่</h2>
+            <p id="editable-quote" class="font-heading italic text-xl md:text-2xl mb-8 font-light">" สองชีวิต สองหัวใจ
+                หลอมรวมเป็นหนึ่งเดียวกันตลอดไป "</p>
+
+            <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 mb-8 max-w-md mx-auto">
+                <p class="text-sm font-light mb-4 uppercase tracking-wider">นับถอยหลังสู่วันพิเศษของเรา</p>
+                <div id="countdown" class="grid grid-cols-4 gap-2 text-center">
+                    <div class="bg-white/20 rounded-lg p-2">
+                        <span id="days" class="block text-2xl md:text-3xl font-bold">00</span>
+                        <span class="text-xs font-light">วัน</span>
+                    </div>
+                    <div class="bg-white/20 rounded-lg p-2">
+                        <span id="hours" class="block text-2xl md:text-3xl font-bold">00</span>
+                        <span class="text-xs font-light">ชั่วโมง</span>
+                    </div>
+                    <div class="bg-white/20 rounded-lg p-2">
+                        <span id="minutes" class="block text-2xl md:text-3xl font-bold">00</span>
+                        <span class="text-xs font-light">นาที</span>
+                    </div>
+                    <div class="bg-white/20 rounded-lg p-2">
+                        <span id="seconds" class="block text-2xl md:text-3xl font-bold">00</span>
+                        <span class="text-xs font-light">วินาที</span>
+                    </div>
+                </div>
+            </div>
+
+            <p id="editable-wedding-date" class="text-lg md:text-xl font-medium">วันเสาร์ที่ 9 มกราคม 2027</p>
+            <p id="editable-wedding-location" class="text-sm md:text-base font-light opacity-90">ณ บ้านเจ้าสาว
+                บ้านโคกกุง อ.แก้งคร้อ จ.ชัยภูมิ</p>
+        </div>
+    </section>
+
+    <!-- Our Story -->
+    <section id="story" class="py-20 px-4 max-w-4xl mx-auto text-center">
+        <h2 class="font-cursive text-4xl text-roseGold mb-2">เรื่องราวของเรา</h2>
+        <p class="text-gray-500 text-sm mb-12 uppercase tracking-widest">จุดเริ่มต้นความรักของเรา</p>
+
+        <div class="grid md:grid-cols-2 gap-8 items-center text-left">
+            <div class="relative group">
+                <img id="img-story"
+                    src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80"
+                    alt="Couple" class="rounded-2xl shadow-lg w-full h-80 object-cover">
+                <div
+                    class="admin-only hidden absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center">
+                    <label
+                        class="bg-white text-gray-800 text-xs px-3 py-2 rounded-xl cursor-pointer shadow-md hover:bg-gray-100 font-medium">
+                        📷 เปลี่ยนรูป Story
+                        <input type="file" accept="image/*" class="hidden" onchange="uploadImage(event, 'img-story')">
+                    </label>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <h3 id="editable-story-title" class="text-2xl font-bold text-gray-800 font-heading">
+                    จากเพื่อนร่วมโรงเรียน สู่คู่ชีวิต</h3>
+                <p id="editable-story-p1" class="text-gray-600 leading-relaxed text-sm">
+                    เราเจอกันครั้งแรกเมื่อ 5 ปีที่แล้ว ในการทำงานโปรเจกต์ร่วมกัน จากความประทับใจเล็กๆ น้อยๆ
+                    เปลี่ยนเป็นความผูกพันและแรงซัพพอร์ตที่ดีให้แก่กันในทุกๆ วัน
+                </p>
+                <p id="editable-story-p2" class="text-gray-600 leading-relaxed text-sm">
+                    จนกระทั่งทริปเดินทางไปเที่ยวต่างจังหวัดล่าสุด
+                    ไมเคิลได้ขอซาร่าแต่งงานท่ามกลางบรรยากาศพระอาทิตย์ตกดินอันอบอุ่น
+                    และวันนี้เราพร้อมแล้วที่จะเริ่มต้นก้าวใหม่ไปด้วยกัน
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Schedule & Venue -->
+    <section id="schedule" class="py-20 px-4 bg-roseGoldLight/30">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="font-cursive text-4xl text-roseGold mb-2">Schedule & Location</h2>
+                <p class="text-gray-500 text-sm uppercase tracking-widest">กำหนดการและสถานที่จัดงาน</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Timeline -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-roseGoldLight">
+                    <h3 class="text-xl font-bold text-roseGold mb-6 text-center border-b pb-3">กำหนดการวันงาน</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <span id="editable-time-1"
+                                class="bg-roseGoldLight text-roseGold font-bold px-3 py-1 rounded-full text-xs">08:09
+                                น.</span>
+                            <div>
+                                <h4 id="editable-event-1-title" class="font-semibold text-gray-800">พิธีแห่ขันหมาก &
+                                    หมั้น</h4>
+                                <p id="editable-event-1-desc" class="text-xs text-gray-500">ห้องแกรนด์บอลรูม ชั้น 2</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <span id="editable-time-2"
+                                class="bg-roseGoldLight text-roseGold font-bold px-3 py-1 rounded-full text-xs">09:39
+                                น.</span>
+                            <div>
+                                <h4 id="editable-event-2-title" class="font-semibold text-gray-800">
+                                    พิธีหลั่งน้ำพระพุทธมนต์</h4>
+                                <p id="editable-event-2-desc" class="text-xs text-gray-500">
+                                    ร่วมอวยพรและรดน้ำสังข์แก่คู่บ่าวสาว</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <span id="editable-time-3"
+                                class="bg-roseGoldLight text-roseGold font-bold px-3 py-1 rounded-full text-xs">11:30
+                                น.</span>
+                            <div>
+                                <h4 id="editable-event-3-title" class="font-semibold text-gray-800">
+                                    งานเลี้ยงฉลองมงคลสมรส</h4>
+                                <p id="editable-event-3-desc" class="text-xs text-gray-500">ร่วมรับประทานอาหาร (Buffet
+                                    Lunch) & กิจกรรม</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Venue Info -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-roseGoldLight flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-roseGold mb-4 text-center border-b pb-3">สถานที่จัดงาน</h3>
+                        <p id="editable-venue-name" class="font-semibold text-gray-800 text-lg mb-1">โรงแรม Grand
+                            Heritage Bangkok</p>
+                        <p id="editable-venue-address" class="text-sm text-gray-600 mb-4">123 ถนนสุขุมวิท แขวงคลองเตย
+                            เขตวัฒนา กรุงเทพมหานคร 10110</p>
+                        <div class="bg-gray-50 p-4 rounded-xl text-xs text-gray-600 space-y-1 mb-6">
+                            <p><strong>Dress Code:</strong> <span id="editable-dress-code">Rose Gold, Cream, Sage
+                                    Green</span></p>
+                            <p><strong>การเดินทาง:</strong> <span id="editable-transport">BTS สถานีพร้อมพงษ์ (ทางออก 2)
+                                    มีรถรับส่งของโรงแรม</span></p>
+                            <p><strong>ที่จอดรถ:</strong> <span id="editable-parking">อาคารจอดรถรองรับได้ 300 คัน</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="admin-only hidden mb-2">
+                            <label class="text-xs font-semibold text-roseGold">ลิงก์ Google Maps:</label>
+                            <input type="text" id="mapUrlInput" onchange="updateMapUrl(this.value)"
+                                class="w-full text-xs p-2 border rounded-lg" placeholder="วางลิงก์ Google Maps ที่นี่">
+                        </div>
+                        <a id="mapBtn" href="https://maps.google.com" target="_blank"
+                            class="block text-center w-full bg-roseGold text-white py-3 rounded-xl font-medium hover:bg-roseGold/90 transition shadow-sm text-sm">
+                            📍 เปิดแผนที่ Google Maps
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery" class="py-20 px-4 max-w-5xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="font-cursive text-4xl text-roseGold mb-2">Pre-Wedding Gallery</h2>
+            <p class="text-gray-500 text-sm uppercase tracking-widest">ภาพความทรงจำของเรา</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="relative group">
+                <img id="img-gallery-1"
+                    src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80"
+                    alt="Gallery 1"
+                    class="rounded-xl shadow-sm hover:scale-105 transition duration-300 w-full h-64 object-cover">
+                <div class="admin-only hidden absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
+                    <label class="bg-white text-gray-800 text-xs px-2 py-1 rounded cursor-pointer">เปลี่ยนรูป <input
+                            type="file" accept="image/*" class="hidden"
+                            onchange="uploadImage(event, 'img-gallery-1')"></label>
+                </div>
+            </div>
+            <div class="relative group">
+                <img id="img-gallery-2"
+                    src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80"
+                    alt="Gallery 2"
+                    class="rounded-xl shadow-sm hover:scale-105 transition duration-300 w-full h-64 object-cover">
+                <div class="admin-only hidden absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
+                    <label class="bg-white text-gray-800 text-xs px-2 py-1 rounded cursor-pointer">เปลี่ยนรูป <input
+                            type="file" accept="image/*" class="hidden"
+                            onchange="uploadImage(event, 'img-gallery-2')"></label>
+                </div>
+            </div>
+            <div class="relative group">
+                <img id="img-gallery-3"
+                    src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=600&q=80"
+                    alt="Gallery 3"
+                    class="rounded-xl shadow-sm hover:scale-105 transition duration-300 w-full h-64 object-cover">
+                <div class="admin-only hidden absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
+                    <label class="bg-white text-gray-800 text-xs px-2 py-1 rounded cursor-pointer">เปลี่ยนรูป <input
+                            type="file" accept="image/*" class="hidden"
+                            onchange="uploadImage(event, 'img-gallery-3')"></label>
+                </div>
+            </div>
+            <div class="relative group">
+                <img id="img-gallery-4"
+                    src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=600&q=80"
+                    alt="Gallery 4"
+                    class="rounded-xl shadow-sm hover:scale-105 transition duration-300 w-full h-64 object-cover">
+                <div class="admin-only hidden absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
+                    <label class="bg-white text-gray-800 text-xs px-2 py-1 rounded cursor-pointer">เปลี่ยนรูป <input
+                            type="file" accept="image/*" class="hidden"
+                            onchange="uploadImage(event, 'img-gallery-4')"></label>
+                </div>
+            </div>
+            <div class="relative group">
+                <img id="img-gallery-5"
+                    src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=600&q=80"
+                    alt="Gallery 5"
+                    class="rounded-xl shadow-sm hover:scale-105 transition duration-300 w-full h-64 object-cover">
+                <div class="admin-only hidden absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
+                    <label class="bg-white text-gray-800 text-xs px-2 py-1 rounded cursor-pointer">เปลี่ยนรูป <input
+                            type="file" accept="image/*" class="hidden"
+                            onchange="uploadImage(event, 'img-gallery-5')"></label>
+                </div>
+            </div>
+            <div class="relative group">
+                <img id="img-gallery-6"
+                    src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=600&q=80"
+                    alt="Gallery 6"
+                    class="rounded-xl shadow-sm hover:scale-105 transition duration-300 w-full h-64 object-cover">
+                <div class="admin-only hidden absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
+                    <label class="bg-white text-gray-800 text-xs px-2 py-1 rounded cursor-pointer">เปลี่ยนรูป <input
+                            type="file" accept="image/*" class="hidden"
+                            onchange="uploadImage(event, 'img-gallery-6')"></label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RSVP Section (สำหรับแขกตอบรับ) -->
+    <section id="rsvp" class="py-20 px-4 bg-white">
+        <div class="max-w-xl mx-auto bg-warmGray p-8 rounded-3xl shadow-md border border-roseGoldLight">
+            <div class="text-center mb-8">
+                <h2 class="font-cursive text-4xl text-roseGold mb-2">RSVP</h2>
+                <p class="text-gray-500 text-xs uppercase tracking-widest">ยืนยันการเข้าร่วมงาน</p>
+            </div>
+
+            <form id="rsvpForm" onsubmit="submitRSVP(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">ชื่อ - นามสกุล *</label>
+                    <input type="text" id="rsvpName" required placeholder="เช่น สมชาย ใจดี"
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-roseGold text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">การเข้าร่วมงาน *</label>
+                    <select id="rsvpStatus" required
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-roseGold text-sm bg-white">
+                        <option value="attend">ยินดีมาร่วมงานแน่นอน</option>
+                        <option value="decline">ติดภารกิจ ไม่สามารถมาร่วมงานได้</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">จำนวนผู้ติดตาม (รวมตัวท่าน)</label>
+                    <input type="number" id="rsvpGuests" min="1" max="10" value="1"
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-roseGold text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">การแพ้อาหาร
+                        หรือข้อจำกัดเรื่องอาหาร</label>
+                    <input type="text" id="rsvpFood" placeholder="เช่น ทานมังสวิรัติ, แพ้อาหารทะเล"
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-roseGold text-sm">
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-roseGold text-white py-3 rounded-xl font-medium hover:bg-roseGold/90 transition shadow-md mt-4 text-sm">
+                    ส่งข้อมูลยืนยัน
+                </button>
+            </form>
+
+            <div id="rsvpSuccess" class="hidden text-center py-6">
+                <p class="text-roseGold font-bold text-lg mb-2">🎉 บันทึกข้อมูลเรียบร้อยแล้ว!</p>
+                <p class="text-gray-600 text-sm">ขอบคุณที่ร่วมเป็นส่วนหนึ่งในวันสำคัญของเราครับ/ค่ะ</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Digital Guestbook (สำหรับแขกอวยพร) -->
+    <section id="wishes" class="py-20 px-4 max-w-3xl mx-auto">
+        <div class="text-center mb-8">
+            <h2 class="font-cursive text-4xl text-roseGold mb-2">Wishes for the Couple</h2>
+            <p class="text-gray-500 text-xs uppercase tracking-widest">สมุดอวยพรออนไลน์</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+            <form id="wishForm" onsubmit="addWish(event)" class="space-y-4">
+                <input type="text" id="wishName" placeholder="ชื่อของคุณ" required
+                    class="w-full px-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-roseGold">
+                <textarea id="wishMessage" rows="3" placeholder="พิมพ์คำอวยพรให้บ่าวสาวที่นี่..." required
+                    class="w-full px-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-roseGold"></textarea>
+                <button type="submit"
+                    class="bg-roseGold text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-roseGold/90 transition shadow-sm">
+                    ส่งคำอวยพร 💌
+                </button>
+            </form>
+        </div>
+
+        <div id="wishesList" class="space-y-4">
+            <!-- รายการคำอวยพรจะถูกดึงจาก Firebase มาแสดงตรงนี้ -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center text-xs text-gray-400 border-t border-gray-200">
+        <p>Made with ❤️ for Our Special Wedding Day</p>
+    </footer>
+
+    <!-- Firebase SDK Compat (App, Firestore, และ Auth ถ้าจำเป็น) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 1. ตั้งค่า Firebase Config ของคุณ
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfP2RFFMePJMlcWFha5DRSl0i0ea0zmZw",
+            authDomain: "wedding-sister-bf48f.firebaseapp.com",
+            projectId: "wedding-sister-bf48f",
+            storageBucket: "wedding-sister-bf48f.firebasestorage.app",
+            messagingSenderId: "745336416285",
+            appId: "1:745336416285:web:aa60195f798d67848f7ef4"
+        };
+
+        // เริ่มต้นการเชื่อมต่อ Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // รหัสผ่าน Admin
+        const ADMIN_PIN = "1234";
+        let isAdmin = false;
+
+        // 2. Countdown Timer
+        const weddingTargetDate = new Date("January 9, 2027 08:09:00").getTime();
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = weddingTargetDate - now;
+
+            if (distance < 0) {
+                document.getElementById("countdown").innerHTML = "<p class='col-span-4 font-bold text-lg'>Today is the Wedding Day!</p>";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days < 10 ? '0' + days : days;
+            document.getElementById("hours").innerText = hours < 10 ? '0' + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById("seconds").innerText = seconds < 10 ? '0' + seconds : seconds;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // 3. Admin Login Toggle
+        function toggleAdminLogin() {
+            const pin = prompt("กรุณาใส่รหัสผ่าน Admin เพื่อแก้ไขหน้าเว็บ:");
+            if (pin === ADMIN_PIN) {
+                isAdmin = true;
+                enableAdminMode();
+                alert("เข้าสู่โหมดแก้ไขเรียบร้อยแล้ว!");
+            } else if (pin !== null) {
+                alert("รหัสผ่านไม่ถูกต้อง!");
+            }
+        }
+
+        function enableAdminMode() {
+            document.getElementById('adminLoginBtn').classList.add('hidden');
+            document.getElementById('adminControls').classList.remove('hidden');
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+            document.querySelectorAll("[id^='editable-']").forEach(el => {
+                el.contentEditable = "true";
+                el.classList.add('editable-active');
+            });
+        }
+
+        function logoutAdmin() {
+            isAdmin = false;
+            document.getElementById('adminLoginBtn').classList.remove('hidden');
+            document.getElementById('adminControls').classList.add('hidden');
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll("[id^='editable-']").forEach(el => {
+                el.contentEditable = "false";
+                el.classList.remove('editable-active');
+            });
+            alert("ออกจากโหมดแก้ไขแล้ว");
+        }
+
+        // 4. Image Upload (Base64)
+        function uploadImage(event, targetImgId) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 1.5 * 1024 * 1024) {
+                alert("ขนาดไฟล์ใหญ่เกิน 1.5 MB กรุณาเลือกไฟล์ใหม่");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const base64Image = e.target.result;
+                if (targetImgId === 'hero-bg') {
+                    document.getElementById('hero-section').style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('${base64Image}')`;
+                    document.getElementById('hero-section').dataset.bg = base64Image;
+                } else {
+                    document.getElementById(targetImgId).src = base64Image;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateMapUrl(url) {
+            document.getElementById('mapBtn').href = url;
+        }
+
+        // 5. Save to Firestore (Admin)
+        function saveAllToFirestore() {
+            if (!isAdmin) return;
+
+            const siteData = {
+                textData: {},
+                imageData: {},
+                mapUrl: document.getElementById('mapBtn').href
+            };
+
+            document.querySelectorAll("[id^='editable-']").forEach(el => {
+                siteData.textData[el.id] = el.innerText;
+            });
+
+            const imgIds = ['img-story', 'img-gallery-1', 'img-gallery-2', 'img-gallery-3', 'img-gallery-4', 'img-gallery-5', 'img-gallery-6'];
+            imgIds.forEach(id => {
+                const imgEl = document.getElementById(id);
+                if (imgEl) siteData.imageData[id] = imgEl.src;
+            });
+
+            const heroSection = document.getElementById('hero-section');
+            if (heroSection.dataset.bg) {
+                siteData.imageData['hero-bg'] = heroSection.dataset.bg;
+            }
+
+            db.collection('wedding').doc('content').set(siteData)
+                .then(() => alert("💾 บันทึกข้อมูลขึ้น Firestore สำเร็จ!"))
+                .catch(err => alert("เกิดข้อผิดพลาด: " + err.message));
+        }
+
+        // 6. Load Content from Firestore
+        function loadContentFromFirestore() {
+            db.collection('wedding').doc('content').get().then(doc => {
+                if (!doc.exists) return;
+                const data = doc.data();
+
+                if (data.textData) {
+                    Object.keys(data.textData).forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.innerText = data.textData[id];
+                    });
+                }
+
+                if (data.imageData) {
+                    Object.keys(data.imageData).forEach(id => {
+                        if (id === 'hero-bg') {
+                            document.getElementById('hero-section').style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('${data.imageData[id]}')`;
+                        } else {
+                            const el = document.getElementById(id);
+                            if (el) el.src = data.imageData[id];
+                        }
+                    });
+                }
+
+                if (data.mapUrl) {
+                    document.getElementById('mapBtn').href = data.mapUrl;
+                    const mapInput = document.getElementById('mapUrlInput');
+                    if (mapInput) mapInput.value = data.mapUrl;
+                }
+            }).catch(err => console.log("ยังไม่มีข้อมูลคอนเทนต์บน Firestore:", err));
+        }
+
+        // 7. RSVP & Guestbook (Firestore)
+        function submitRSVP(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.innerText = "กำลังบันทึกข้อมูล...";
+            submitBtn.disabled = true;
+
+            const nameValue = document.getElementById('rsvpName').value; // ดึงค่าชื่อเตรียมไว้
+
+            const rsvpData = {
+                name: nameValue,
+                status: document.getElementById('rsvpStatus').value,
+                guests: document.getElementById('rsvpGuests').value,
+                food: document.getElementById('rsvpFood').value,
+                timestamp: Date.now()
+            };
+
+            db.collection('rsvps').add(rsvpData).then(() => {
+                document.getElementById("rsvpForm").classList.add("hidden");
+                const successBox = document.getElementById("rsvpSuccess");
+                successBox.classList.remove("hidden");
+                successBox.innerHTML = `
+                    <div class="space-y-3">
+                        <p class="text-roseGold font-bold text-xl">🎉 บันทึกข้อมูลเรียบร้อยแล้ว!</p>
+                        <p class="text-gray-600 text-sm">ขอบคุณ คุณ<b>${escapeHtml(rsvpData.name)}</b> ที่แจ้งการเข้าร่วมงานครับ/ค่ะ</p>
+                        <div class="pt-2">
+                            <a href="#wishes" class="inline-block bg-roseGold/10 text-roseGold border border-roseGold/30 text-xs px-4 py-2 rounded-full font-medium hover:bg-roseGold hover:text-white transition">
+                                ✍️ เขียนคำอวยพรให้บ่าวสาวต่อตรงนี้
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                // 🌟 เติมชื่อลงในฟอร์มช่องคำอวยพรอัตโนมัติทันที
+                const wishNameInput = document.getElementById('wishName');
+                if (wishNameInput) {
+                    wishNameInput.value = nameValue;
+                }
+
+                setTimeout(() => {
+                    document.getElementById('wishes').scrollIntoView({ behavior: 'smooth' });
+                }, 800);
+            }).catch(err => {
+                alert("เกิดข้อผิดพลาด: " + err.message);
+                submitBtn.innerText = "ส่งข้อมูลยืนยัน";
+                submitBtn.disabled = false;
+            });
+        }
+
+        function addWish(e) {
+            e.preventDefault();
+            const wishData = {
+                name: document.getElementById('wishName').value,
+                message: document.getElementById('wishMessage').value,
+                timestamp: Date.now()
+            };
+
+            db.collection('wishes').add(wishData).then(() => {
+                document.getElementById('wishName').value = "";
+                document.getElementById('wishMessage').value = "";
+            }).catch(err => alert("เกิดข้อผิดพลาดในการส่งคำอวยพร: " + err.message));
+        }
+
+        function loadWishes() {
+            db.collection('wishes').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                const list = document.getElementById('wishesList');
+                if (!list) return;
+                list.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const wish = doc.data();
+                    const item = document.createElement('div');
+                    item.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-100";
+                    item.innerHTML = `
+                        <p class="font-semibold text-roseGold text-sm">${escapeHtml(wish.name)}</p>
+                        <p class="text-gray-600 text-sm mt-1">${escapeHtml(wish.message)}</p>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // โหลดข้อมูลเมื่อเปิดเว็บ
+        window.onload = function () {
+            loadContentFromFirestore();
+            loadWishes();
+        };
+    </script>
+</body>
+
+</html>
