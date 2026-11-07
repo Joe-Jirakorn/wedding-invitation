@@ -58,7 +58,7 @@
         </button>
         <div id="adminControls" class="hidden flex items-center gap-2">
             <span class="text-xs font-semibold text-roseGold px-2">✨ โหมดแก้ไข (Admin)</span>
-            <button onclick="saveAllToFirebase()"
+            <button onclick="saveAllToFirestore()"
                 class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-xl font-medium hover:bg-emerald-700 transition shadow-sm">
                 💾 บันทึกขึ้น Firebase
             </button>
@@ -82,7 +82,7 @@
             </div>
             <a href="#rsvp"
                 class="bg-roseGold text-white px-4 py-2 rounded-full text-xs md:text-sm font-medium hover:bg-roseGold/90 transition shadow-sm">
-                RSVP ตอบรับงาน
+                ตอบรับงาน/คำเชิญ
             </a>
         </div>
     </nav>
@@ -226,16 +226,13 @@
                     class="bg-white p-6 rounded-2xl shadow-sm border border-roseGoldLight flex flex-col justify-between">
                     <div>
                         <h3 class="text-xl font-bold text-roseGold mb-4 text-center border-b pb-3">สถานที่จัดงาน</h3>
-                        <p id="editable-venue-name" class="font-semibold text-gray-800 text-lg mb-1">โรงแรม Grand
-                            Heritage Bangkok</p>
-                        <p id="editable-venue-address" class="text-sm text-gray-600 mb-4">123 ถนนสุขุมวิท แขวงคลองเตย
-                            เขตวัฒนา กรุงเทพมหานคร 10110</p>
+                        <p id="editable-venue-name" class="font-semibold text-gray-800 text-lg mb-1">บ้านปู่นอง ย่าเพชรk
+                        </p>
+                        <p id="editable-venue-address" class="text-sm text-gray-600 mb-4">101 ม.13 ต.โคกกุง อ.แก้งคร้อ
+                            จ.ชัยภูมิ 36150</p>
                         <div class="bg-gray-50 p-4 rounded-xl text-xs text-gray-600 space-y-1 mb-6">
-                            <p><strong>Dress Code:</strong> <span id="editable-dress-code">Rose Gold, Cream, Sage
-                                    Green</span></p>
-                            <p><strong>การเดินทาง:</strong> <span id="editable-transport">BTS สถานีพร้อมพงษ์ (ทางออก 2)
-                                    มีรถรับส่งของโรงแรม</span></p>
-                            <p><strong>ที่จอดรถ:</strong> <span id="editable-parking">อาคารจอดรถรองรับได้ 300 คัน</span>
+                            <p><strong>การเดินทาง:</strong> <span id="editable-transport">รถส่วนตัว</span></p>
+                            <p><strong>ที่จอดรถ:</strong> <span id="editable-parking">ลานกว้างข้างสระน้ำ</span>
                             </p>
                         </div>
                     </div>
